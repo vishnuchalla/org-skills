@@ -1,6 +1,9 @@
 {
   "name": "cb-skills",
-  "owner": "Cloud Bulldozer Team",
+  "owner": {
+    "name": "Cloud Bulldozer Team",
+    "email": "vishnuchalla@gmail.com"
+  },
   "version": "1.0.0",
   "description": "Shared AI coding skills for the Cloud Bulldozer organization",
   "plugins": [
