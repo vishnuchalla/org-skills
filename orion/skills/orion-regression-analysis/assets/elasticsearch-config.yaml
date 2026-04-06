@@ -1,0 +1,107 @@
+# Elasticsearch/OpenSearch Configuration Asset for Orion
+#
+# This asset stores your Elasticsearch/OpenSearch cluster configuration
+# for use with the Orion performance regression analysis tool.
+#
+# Usage: Claude will automatically use these settings when generating
+# Orion commands and configurations.
+
+# Display name for this ES configuration
+name: "Performance ES Cluster"
+
+# Connection Configuration
+connection:
+  # Primary server URL (required)
+  server_url: ""
+
+  # Index patterns for different data types
+  benchmark_index: "ripsaw-kube-burner-*"    # Performance benchmark data
+  metadata_index: "perf_scale_ci*"           # Test metadata and run information
+  
+  # Optional: Custom port if not using standard HTTPS (443)
+  # port: 9200
+  
+  # Optional: API path prefix
+  # path_prefix: ""
+
+# Authentication (choose one method)
+authentication:
+  # Option 1: No authentication (for open clusters)
+  # type: "none"
+
+  # Option 2: Basic authentication
+  type: "basic"
+  username: ""
+  password: ""
+  
+  # Option 3: API Key authentication  
+  # type: "api_key"
+  # api_key: ""
+  
+  # Option 4: Bearer token
+  # type: "bearer"
+  # token: ""
+
+# Connection Settings
+settings:
+  # Request timeout in seconds
+  timeout: 30
+  
+  # Maximum number of results to fetch per query
+  max_results: 10000
+  
+  # Verify SSL certificates (set to false for self-signed certs)
+  verify_ssl: true
+  
+  # Optional: Custom CA certificate path
+  # ca_cert_path: "/path/to/ca.crt"
+
+# Data Configuration
+data:
+  # Default time range for lookbacks (can be overridden in commands)
+  default_lookback: "15d"
+  
+  # Default timestamp field name in your indices
+  timestamp_field: "@timestamp"
+  
+  # Default UUID field for test run identification
+  uuid_field: "uuid"
+  
+  # Common metadata filters to apply to all queries
+  # (these will be added to every Orion analysis)
+  global_filters:
+    # Uncomment and customize as needed for your environment
+    # platform: "AWS"
+    # clusterType: "self-managed"
+    # networkType: "OVNKubernetes"
+
+# Validation Settings
+validation:
+  # Test connectivity on asset creation/update
+  test_connection: true
+  
+  # Verify indices exist
+  check_indices: true
+  
+  # Sample query to validate data access
+  test_query_limit: 1
+
+# Notes and Documentation
+notes: |
+  Configuration notes:
+  - Server URL should include protocol (https://)
+  - Index patterns support wildcards (*)
+  - Update global_filters to match your environment
+  - Use 'none' authentication for open development clusters
+  
+  Common troubleshooting:
+  - If connection fails, check server_url and authentication
+  - If no data found, verify index patterns match your cluster
+  - Use verify_ssl: false for self-signed certificates
+
+# Metadata
+metadata:
+  created_by: "Orion Claude Skill"
+  version: "1.0"
+  last_updated: "2026-04-01"
+  environment: "production"

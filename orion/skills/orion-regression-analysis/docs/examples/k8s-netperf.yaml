@@ -1,0 +1,122 @@
+# k8s-netperf Network Performance Analysis Configuration
+#
+# KEY FIX: Do NOT specify 'aggregation' field in metrics for k8s-netperf!
+# k8s-netperf data is pre-aggregated, so aggregation causes empty results.
+#
+# LIMITATION: Orion does not support boolean metadata filters (hostNetwork, service, local).
+# Workaround: Filter by profile and platform only. Results include mixed scenarios.
+#
+# Usage:
+#   orion --config k8s-netperf.yaml --hunter-analyze \
+#     --es-server='https://user:pass@es.example.com' \
+#     --benchmark-index='k8s-netperf-*' \
+#     --metadata-index='k8s-netperf-*' \
+#     --input-vars='{"version": "5.0", "platform": "AWS"}' \
+#     --lookback=60d --viz
+
+tests:
+  # Network Performance Analysis - All Scenarios
+  - name: network-performance
+    metadata:
+      # Metadata level: only platform and version (for UUID matching)
+      metadata.platform: "{{ platform }}"
+      metadata.ocpMajorVersion: "{{ version }}"
+    metrics:
+      # TCP_STREAM - Pod Network (through CNI)
+      - name: tcpStreamPodNetwork
+        metric_of_interest: throughput
+        # Filters at metrics level (not metadata!)
+        profile.keyword: TCP_STREAM
+        hostNetwork: "false"  # Must be quoted string!
+        service: "false"
+        threshold: 10
+        direction: -1
+
+      # TCP_STREAM - Host Network (bypass CNI - baseline)
+      - name: tcpStreamHostNetwork
+        metric_of_interest: throughput
+        profile.keyword: TCP_STREAM
+        hostNetwork: "true"
+        service: "false"
+        threshold: 10
+        direction: -1
+
+      # TCP_STREAM - Via Service (service mesh overhead)
+      - name: tcpStreamViaService
+        metric_of_interest: throughput
+        profile.keyword: TCP_STREAM
+        hostNetwork: "false"
+        service: "true"
+        threshold: 10
+        direction: -1
+
+      # TCP Retransmits (Pod Network)
+      - name: tcpRetransmits
+        metric_of_interest: tcpRetransmits
+        profile.keyword: TCP_STREAM
+        hostNetwork: "false"
+        service: "false"
+        threshold: 25
+        direction: 1
+
+      # UDP_STREAM - Pod Network
+      - name: udpStreamPodNetwork
+        metric_of_interest: throughput
+        profile.keyword: UDP_STREAM
+        hostNetwork: "false"
+        service: "false"
+        threshold: 10
+        direction: -1
+
+      # UDP Packet Loss
+      - name: udpPacketLoss
+        metric_of_interest: udpLossPercent
+        profile.keyword: UDP_STREAM
+        hostNetwork: "false"
+        service: "false"
+        threshold: 20
+        direction: 1
+
+      # TCP_RR - Transaction Rate
+      - name: tcpRRTransactionRate
+        metric_of_interest: throughput
+        profile.keyword: TCP_RR
+        hostNetwork: "false"
+        service: "false"
+        threshold: 15
+        direction: -1
+
+      # TCP_RR - Latency
+      - name: tcpRRLatency
+        metric_of_interest: latency
+        profile.keyword: TCP_RR
+        hostNetwork: "false"
+        service: "false"
+        threshold: 20
+        direction: 1
+
+      # TCP_CRR - Connection Rate
+      - name: tcpCRRConnectionRate
+        metric_of_interest: throughput
+        profile.keyword: TCP_CRR
+        hostNetwork: "false"
+        service: "false"
+        threshold: 15
+        direction: -1
+
+      # TCP_CRR - Connection Latency
+      - name: tcpCRRConnectionLatency
+        metric_of_interest: latency
+        profile.keyword: TCP_CRR
+        hostNetwork: "false"
+        service: "false"
+        threshold: 20
+        direction: 1
+
+# Notes:
+# 1. NO aggregation field for k8s-netperf (data is pre-aggregated)
+# 2. Boolean filters MUST be quoted strings: "false" or "true" (not YAML booleans)
+# 3. Profile and scenario filters at METRICS level (not metadata level)
+# 4. Metadata level: only platform/version for UUID matching
+# 5. TCP_STREAM and UDP_STREAM report throughput in Mb/s
+# 6. TCP_RR and TCP_CRR report throughput in OP/s (operations per second)

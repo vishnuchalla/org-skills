@@ -1,0 +1,143 @@
+# Node Density Performance Analysis Configuration
+#
+# This configuration focuses on node-level performance during high pod density tests.
+# It monitors kubelet, container runtime, and node resource utilization.
+
+tests:
+  - name: node-density-performance
+    metadata:
+      # Infrastructure filters
+      platform: AWS
+      clusterType: self-managed
+      networkType: OVNKubernetes
+
+      # Node configuration (discovered via: node-config --benchmark node-density)
+      masterNodesType: m6a.xlarge
+      masterNodesCount: 3
+      workerNodesType: m6a.2xlarge
+      workerNodesCount: 12  # Higher worker count for node density tests
+
+      # Test identification
+      benchmark.keyword: node-density
+      ocpVersion: "{{ version }}"
+      
+      # Exclude variations
+      not:
+        stream: okd
+
+    # Test-wide configuration
+    context: 5           # Analyze 5 runs before/after changepoints
+
+    metrics:
+      # Pod scheduling and startup (user-facing performance)
+      - name: podScheduleLatency
+        metricName: podLatencyQuantilesMeasurement
+        quantileName: Scheduled
+        metric_of_interest: P99
+        threshold: 15
+        direction: 1
+        labels:
+          - "[Jira: Scheduling]"
+
+      - name: podReadyLatency
+        metricName: podLatencyQuantilesMeasurement
+        quantileName: Ready
+        metric_of_interest: P99
+        threshold: 15
+        direction: 1
+        correlation: podScheduleLatency_P99
+        labels:
+          - "[Jira: PerfScale]"
+
+      # Kubelet performance (core node component)
+      - name: kubeletCPU
+        threshold: 12
+        metricName: containerCPU
+        labels.namespace.keyword: ""
+        labels.name.keyword: kubelet
+        metric_of_interest: value
+        agg:
+          value: cpu
+          agg_type: avg
+        direction: 1
+        labels:
+          - "[Jira: Node]"
+
+      - name: kubeletMemory
+        threshold: 12
+        metricName: containerMemory
+        labels.namespace.keyword: ""
+        labels.name.keyword: kubelet
+        metric_of_interest: value
+        agg:
+          value: memory
+          agg_type: max
+        direction: 1
+        correlation: kubeletCPU_avg
+        labels:
+          - "[Jira: Node]"
+
+      # Container runtime performance
+      - name: crioCPU
+        threshold: 12
+        metricName.keyword: cgroupCPU
+        labels.id.keyword: /system.slice/crio.service
+        metric_of_interest: value
+        agg:
+          value: cpu
+          agg_type: avg
+        direction: 1
+        labels:
+          - "[Jira: Node]"
+
+      - name: crioMemory
+        threshold: 12
+        metricName.keyword: cgroupMemoryRSS
+        labels.id.keyword: /system.slice/crio.service
+        metric_of_interest: value
+        agg:
+          value: mem
+          agg_type: max
+        direction: 1
+        correlation: crioCPU_avg
+        labels:
+          - "[Jira: Node]"
+
+      # OVS performance (networking at node level)
+      - name: ovsCPU
+        metricName.keyword: cgroupCPU
+        labels.id.keyword: /system.slice/ovs-vswitchd.service
+        metric_of_interest: value
+        agg:
+          value: cpu
+          agg_type: avg
+        threshold: 10      # OVS can be noisy
+        direction: 1
+        labels:
+          - "[Jira: Networking]"
+
+      - name: ovsMemoryWorkers
+        metricName.keyword: cgroupMemoryRSS-Workers
+        labels.id.keyword: /system.slice/ovs-vswitchd.service
+        metric_of_interest: value
+        agg:
+          value: mem
+          agg_type: max
+        threshold: 15
+        direction: 1
+        correlation: ovsCPU_avg
+        labels:
+          - "[Jira: Networking]"
+
+      # Control plane impact (should remain stable during node density tests)
+      - name: apiserverCPU
+        metricName: containerCPU
+        labels.namespace.keyword: openshift-kube-apiserver
+        metric_of_interest: value
+        agg:
+          value: cpu
+          agg_type: avg
+        threshold: 20      # Higher threshold - should be less impacted
+        direction: 1
+        labels:
+          - "[Jira: kube-apiserver]"

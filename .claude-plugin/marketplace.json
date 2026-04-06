@@ -1,0 +1,15 @@
+{
+  "name": "cb-skills",
+  "owner": "Cloud Bulldozer Team",
+  "version": "1.0.0",
+  "description": "Shared AI coding skills for the Cloud Bulldozer organization",
+  "plugins": [
+    {
+      "name": "orion",
+      "version": "1.0.0",
+      "source": "./orion",
+      "description": "Orion performance regression detection — config generation, Elasticsearch discovery, and analysis for OpenShift CPT benchmarks",
+      "license": "Apache-2.0"
+    }
+  ]
+}

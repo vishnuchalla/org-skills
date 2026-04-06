@@ -1,0 +1,89 @@
+# Basic Cluster Density Performance Analysis Configuration
+# 
+# This configuration analyzes control plane performance during cluster density tests.
+# It focuses on core OpenShift components and their resource usage patterns.
+
+tests:
+  - name: cluster-density-performance
+    metadata:
+      # Infrastructure filters
+      platform: AWS
+      clusterType: self-managed
+
+      # Node configuration (discovered via: node-config --benchmark cluster-density-v2)
+      masterNodesType: m6a.xlarge
+      masterNodesCount: 3
+      workerNodesType: m6a.xlarge
+      workerNodesCount: 6
+
+      # Test identification
+      benchmark.keyword: cluster-density-v2
+      ocpVersion: "{{ version }}"
+      networkType: OVNKubernetes
+      
+      # Exclude test variations
+      not:
+        stream: okd
+        jobConfig.name: garbage-collection
+
+    metrics:
+      # Pod lifecycle performance (key user-facing metric)
+      - name: podReadyLatency
+        metricName: podLatencyQuantilesMeasurement
+        quantileName: Ready
+        metric_of_interest: P99
+        threshold: 10     # Lower threshold for critical metric
+        direction: 1      # Only increases are regressions
+        labels:
+          - "[Jira: PerfScale]"
+
+      # API Server performance (control plane bottleneck)
+      - name: apiserverCPU
+        threshold: 15
+        metricName: containerCPU
+        labels.namespace.keyword: openshift-kube-apiserver
+        metric_of_interest: value
+        agg:
+          value: cpu
+          agg_type: avg
+        direction: 1
+        labels:
+          - "[Jira: kube-apiserver]"
+
+      # etcd performance (critical for cluster stability)
+      - name: etcdDiskLatency
+        threshold: 15
+        metricName: 99thEtcdDiskBackendCommitDurationSeconds
+        metric_of_interest: value
+        agg:
+          value: duration
+          agg_type: avg
+        direction: 1
+        correlation: etcdCPU_avg    # Link to etcd CPU usage
+        labels:
+          - "[Jira: etcd]"
+
+      - name: etcdCPU
+        threshold: 15
+        metricName: containerCPU
+        labels.namespace.keyword: openshift-etcd
+        metric_of_interest: value
+        agg:
+          value: cpu
+          agg_type: avg
+        direction: 1
+        labels:
+          - "[Jira: etcd]"
+
+      # OVN Kubernetes performance (networking layer)
+      - name: ovnCPU
+        metricName: containerCPU
+        labels.namespace.keyword: openshift-ovn-kubernetes
+        metric_of_interest: value
+        agg:
+          value: cpu
+          agg_type: avg
+        direction: 1
+        correlation: podReadyLatency_P99  # Link to pod startup
+        labels:
+          - "[Jira: OVN]"

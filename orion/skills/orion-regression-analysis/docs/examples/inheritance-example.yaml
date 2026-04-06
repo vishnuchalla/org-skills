@@ -1,0 +1,126 @@
+# Configuration Inheritance Example
+#
+# This example demonstrates how to use parentConfig and metricsFile
+# for maintainable, reusable configurations.
+#
+# File structure:
+#   shared-metadata.yaml    - Common infrastructure settings
+#   common-metrics.yaml     - Shared performance metrics
+#   inheritance-example.yaml - This file (uses inheritance)
+
+# Inherit metadata from shared file
+parentConfig: shared-metadata.yaml
+
+# Inherit metrics from shared file  
+metricsFile: common-metrics.yaml
+
+tests:
+  # Test that uses full inheritance
+  - name: standard-cluster-density
+    metadata:
+      # Inherits from shared-metadata.yaml:
+      #   platform: AWS
+      #   clusterType: self-managed
+      #   masterNodesCount: 3
+      #   workerNodesCount: 6
+      #   networkType: OVNKubernetes
+      
+      # Add test-specific metadata
+      benchmark.keyword: cluster-density-v2
+      ocpVersion: "{{ version }}"
+      
+    # metrics section is inherited from common-metrics.yaml
+    # No need to redefine common metrics like podReadyLatency, apiserverCPU, etc.
+
+  # Test that partially overrides inheritance
+  - name: large-cluster-density
+    metadata:
+      # Inherits most from shared-metadata.yaml
+      benchmark.keyword: cluster-density-v2
+      ocpVersion: "{{ version }}"
+      
+      # Override specific values
+      workerNodesCount: 24        # Override inherited value of 6
+      masterNodesType: m6a.2xlarge # Override inherited type
+      
+    metrics:
+      # Inherits all metrics from common-metrics.yaml
+      # Add test-specific metric
+      - name: highDensityScheduling
+        metricName: schedulingThroughput
+        metric_of_interest: value
+        agg:
+          value: throughput
+          agg_type: avg
+        threshold: 20
+        direction: -1     # Decreases are bad for throughput
+        labels:
+          - "[Jira: Scheduling]"
+
+  # Test that uses local overrides
+  - name: special-environment
+    local_config: special-metadata.yaml    # Use different metadata source
+    local_metrics: special-metrics.yaml    # Use different metrics source
+    metadata:
+      # Additional metadata on top of local_config
+      ocpVersion: "{{ version }}"
+    metrics:
+      # Additional metrics on top of local_metrics  
+      - name: customMetric
+        metricName: custom_measurement
+        metric_of_interest: value
+        threshold: 10
+
+  # Test that ignores global inheritance
+  - name: isolated-test
+    IgnoreGlobal: true          # Don't inherit from parentConfig
+    IgnoreGlobalMetrics: true   # Don't inherit from metricsFile
+    metadata:
+      # Define complete metadata (no inheritance)
+      platform: GCP
+      clusterType: managed
+      benchmark.keyword: custom-benchmark
+      ocpVersion: "{{ version }}"
+    metrics:
+      # Define complete metrics (no inheritance)
+      - name: isolatedMetric
+        metricName: isolated_measurement
+        metric_of_interest: value
+        threshold: 15
+        direction: 1
+
+# Example shared-metadata.yaml content:
+# ---
+# metadata:
+#   platform: AWS
+#   clusterType: self-managed
+#   masterNodesCount: 3
+#   workerNodesCount: 6
+#   masterNodesType: m6a.xlarge
+#   workerNodesType: m6a.xlarge
+#   networkType: OVNKubernetes
+#   not:
+#     stream: okd
+
+# Example common-metrics.yaml content:
+# ---
+# - name: podReadyLatency
+#   metricName: podLatencyQuantilesMeasurement
+#   quantileName: Ready
+#   metric_of_interest: P99
+#   threshold: 15
+#   direction: 1
+#   labels:
+#     - "[Jira: PerfScale]"
+# 
+# - name: apiserverCPU
+#   metricName: containerCPU
+#   labels.namespace.keyword: openshift-kube-apiserver
+#   metric_of_interest: value
+#   agg:
+#     value: cpu
+#     agg_type: avg
+#   threshold: 10
+#   direction: 1
+#   labels:
+#     - "[Jira: kube-apiserver]"

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title | default: site.title }}</title>
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="{{ '/' | relative_url }}" class="logo">Cloud Bulldozer <span>Skills</span></a>
+      <ul>
+        <li><a href="{{ '/' | relative_url }}" {% if page.url == '/' %}class="active"{% endif %}>Home</a></li>
+        <li><a href="{{ '/setup/claude-code' | relative_url }}" {% if page.url contains '/setup/' %}class="active"{% endif %}>Setup</a></li>
+        <li><a href="{{ '/skills/orion' | relative_url }}" {% if page.url contains '/skills/' %}class="active"{% endif %}>Skills</a></li>
+        <li><a href="{{ '/contributing/add-a-skill' | relative_url }}" {% if page.url contains '/contributing/' %}class="active"{% endif %}>Contributing</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container">
+      {% if page.url != '/' %}
+      <div class="content-with-sidebar">
+        <aside class="sidebar">
+          {% if page.url contains '/setup/' %}
+            <h4>Setup</h4>
+            <ul>
+              <li><a href="{{ '/setup/claude-code' | relative_url }}">Claude Code</a></li>
+              <li><a href="{{ '/setup/cursor' | relative_url }}">Cursor</a></li>
+              <li><a href="{{ '/setup/api' | relative_url }}">API / SDK</a></li>
+            </ul>
+          {% elsif page.url contains '/skills/' %}
+            <h4>Skills</h4>
+            <ul>
+              <li><a href="{{ '/skills/orion' | relative_url }}">Orion</a></li>
+            </ul>
+          {% elsif page.url contains '/contributing/' %}
+            <h4>Contributing</h4>
+            <ul>
+              <li><a href="{{ '/contributing/add-a-skill' | relative_url }}">Add a Skill</a></li>
+              <li><a href="{{ '/contributing/add-a-plugin' | relative_url }}">Add a Plugin</a></li>
+            </ul>
+          {% endif %}
+        </aside>
+        <article>
+          {{ content }}
+        </article>
+      </div>
+      {% else %}
+        {{ content }}
+      {% endif %}
+    </div>
+  </main>
+
+  <footer>
+    <p>Cloud Bulldozer Org Skills v{{ site.version }} &mdash; <a href="https://github.com/{{ site.repository }}">GitHub</a></p>
+  </footer>
+</body>
+</html>
