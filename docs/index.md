@@ -38,7 +38,7 @@ This marketplace is a shared, version-controlled collection of skills maintained
 
 ```bash
 # Register the marketplace (one-time)
-/plugin marketplace add cloud-bulldozer/org-skills
+/plugin marketplace add vishnuchalla/org-skills
 
 # Install the Orion plugin
 /plugin install orion@cb-skills
@@ -47,7 +47,7 @@ This marketplace is a shared, version-controlled collection of skills maintained
 ### Cursor
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cloud-bulldozer/org-skills/main/install-cursor.sh | bash
+curl -fsSL https://raw.githubusercontent.com/vishnuchalla/org-skills/main/install-cursor.sh | bash
 ```
 
 ### Any LLM (OpenAI, Gemini, Ollama, etc.)

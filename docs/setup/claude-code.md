@@ -9,7 +9,7 @@ title: Setup — Claude Code
 
 ```bash
 # Step 1: Register the Cloud Bulldozer marketplace (one-time)
-/plugin marketplace add cloud-bulldozer/org-skills
+/plugin marketplace add vishnuchalla/org-skills
 
 # Step 2: Install the plugin you need
 /plugin install orion@cb-skills
@@ -79,7 +79,7 @@ Auto-register the marketplace for all users — no manual setup needed.
     "cb-skills": {
       "source": {
         "source": "github",
-        "repo": "cloud-bulldozer/org-skills"
+        "repo": "vishnuchalla/org-skills"
       }
     }
   },

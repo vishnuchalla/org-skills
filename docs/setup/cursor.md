@@ -10,7 +10,7 @@ title: Setup — Cursor
 ### Option 1: Install Script (Recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cloud-bulldozer/org-skills/main/install-cursor.sh | bash
+curl -fsSL https://raw.githubusercontent.com/vishnuchalla/org-skills/main/install-cursor.sh | bash
 ```
 
 Copies all skills to `~/.cursor/skills/`. Restart Cursor to pick them up.
@@ -18,13 +18,13 @@ Copies all skills to `~/.cursor/skills/`. Restart Cursor to pick them up.
 ### Option 2: npx
 
 ```bash
-npx skills add cloud-bulldozer/org-skills
+npx skills add vishnuchalla/org-skills
 ```
 
 ### Option 3: Manual
 
 ```bash
-git clone --depth 1 https://github.com/cloud-bulldozer/org-skills.git /tmp/org-skills
+git clone --depth 1 https://github.com/vishnuchalla/org-skills.git /tmp/org-skills
 mkdir -p ~/.cursor/skills
 cp -r /tmp/org-skills/skills/*/ ~/.cursor/skills/
 rm -rf /tmp/org-skills
@@ -52,5 +52,5 @@ benchmarks, follow the instructions in:
 Re-run the install script — it overwrites with the latest version:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cloud-bulldozer/org-skills/main/install-cursor.sh | bash
+curl -fsSL https://raw.githubusercontent.com/vishnuchalla/org-skills/main/install-cursor.sh | bash
 ```

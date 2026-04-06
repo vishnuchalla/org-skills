@@ -4,19 +4,19 @@ A centralized marketplace of AI coding skills for the [Cloud Bulldozer](https://
 
 Skills are portable markdown instructions that work across Claude Code, Cursor, and any LLM provider (OpenAI, Gemini, Ollama, etc.). Install only what you need.
 
-**Documentation:** [cloud-bulldozer.github.io/org-skills](https://cloud-bulldozer.github.io/org-skills)
+**Documentation:** [vishnuchalla.github.io/org-skills](https://vishnuchalla.github.io/org-skills)
 
 ## Quick Start
 
 **Claude Code:**
 ```bash
-/plugin marketplace add cloud-bulldozer/org-skills
+/plugin marketplace add vishnuchalla/org-skills
 /plugin install orion@cb-skills
 ```
 
 **Cursor:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cloud-bulldozer/org-skills/main/install-cursor.sh | bash
+curl -fsSL https://raw.githubusercontent.com/vishnuchalla/org-skills/main/install-cursor.sh | bash
 ```
 
 **Any LLM:**
@@ -53,8 +53,8 @@ org-skills/
 
 Want to add a skill for your team's workflow? See the guides:
 
-- **[Add a skill](https://cloud-bulldozer.github.io/org-skills/contributing/add-a-skill)** to an existing plugin
-- **[Add a plugin](https://cloud-bulldozer.github.io/org-skills/contributing/add-a-plugin)** with new skills
+- **[Add a skill](https://vishnuchalla.github.io/org-skills/contributing/add-a-skill)** to an existing plugin
+- **[Add a plugin](https://vishnuchalla.github.io/org-skills/contributing/add-a-plugin)** with new skills
 
 ## License
 

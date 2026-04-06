@@ -2,8 +2,8 @@ title: Cloud Bulldozer Skills Marketplace
 version: 1.0.0
 description: Shared AI coding skills for the Cloud Bulldozer organization
 baseurl: /org-skills
-url: https://cloud-bulldozer.github.io
-repository: cloud-bulldozer/org-skills
+url: https://vishnuchalla.github.io
+repository: vishnuchalla/org-skills
 
 markdown: kramdown
 kramdown:
