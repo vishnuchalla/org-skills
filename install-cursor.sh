@@ -3,12 +3,12 @@
 # Install org-skills into Cursor's skills directory.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/vishnuchalla/org-skills/main/install-cursor.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/cloud-bulldozer/org-skills/main/install-cursor.sh | bash
 #
 
 set -euo pipefail
 
-REPO="vishnuchalla/org-skills"
+REPO="cloud-bulldozer/org-skills"
 BRANCH="main"
 SKILLS_DIR="$HOME/.cursor/skills"
 TEMP_DIR=$(mktemp -d)

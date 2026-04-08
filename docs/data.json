@@ -1,0 +1,19 @@
+{
+  "plugins": [
+    {
+      "name": "orion",
+      "version": "1.0.0",
+      "description": "Orion performance regression detection \u2014 config generation, Elasticsearch discovery, and analysis for OpenShift CPT benchmarks",
+      "has_readme": true,
+      "commands": [],
+      "skills": [
+        {
+          "name": "orion-regression-analysis",
+          "id": "orion-regression-analysis",
+          "description": "Expert assistant for Orion performance regression detection and analysis in OpenShift environments. Use when user mentions Orion config, Orion YAML, performance regression, OpenShift performance, or asks about detecting regressions or discovering metrics for Orion configs."
+        }
+      ],
+      "hooks": []
+    }
+  ]
+}

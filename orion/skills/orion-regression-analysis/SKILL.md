@@ -1,8 +1,10 @@
 ---
 name: orion-regression-analysis
-description: Expert assistant for Orion performance regression detection and analysis in OpenShift environments
-TRIGGER when: user mentions "Orion config", "build an Orion config", "create Orion config", "Orion YAML", "orion regression", "performance regression", "OpenShift performance", or asks about detecting performance regressions in OpenShift, if a user is asking how to discover metrics for an Orion config
-DO NOT TRIGGER when: user is discussing general YAML configs, other performance tools, or unrelated OpenShift topics
+description: >-
+  Expert assistant for Orion performance regression detection and analysis
+  in OpenShift environments. Use when user mentions Orion config, Orion YAML,
+  performance regression, OpenShift performance, or asks about detecting
+  regressions or discovering metrics for Orion configs.
 disable-model-invocation: false
 user-invocable: true
 ---

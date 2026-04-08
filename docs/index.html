@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Bulldozer Skills Marketplace</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #818cf8;
+            --bg-dark: #0f1117;
+            --bg-card: #1a1d27;
+            --bg-code: #141620;
+            --text-primary: #e4e4e7;
+            --text-secondary: #d4d4d8;
+            --text-muted: #9ca3af;
+            --border: #2a2d3a;
+            --success: #34d399;
+            --accent: #fb923c;
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f1117 0%, #1a1d27 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: 60px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(15, 17, 23, 0.92);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .navbar-title {
+            display: flex;
+            flex-direction: column;
+            gap: 0.125rem;
+        }
+
+        .navbar-title h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        .subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .navbar-stats {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            background: var(--bg-code);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            display: inline-block;
+            padding: 0.5rem 0.875rem;
+            background: transparent;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: var(--bg-code);
+            color: var(--text-primary);
+        }
+
+        .nav-link.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .nav-link.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Search */
+        .search-box {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .search-input::placeholder { color: var(--text-muted); }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-top: 0.5rem;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .autocomplete-dropdown.show { display: block; }
+
+        .autocomplete-section { padding: 0.75rem 0; }
+        .autocomplete-section:not(:last-child) { border-bottom: 1px solid var(--border); }
+
+        .autocomplete-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .autocomplete-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .autocomplete-item:hover { background: var(--bg-code); }
+
+        .autocomplete-item-icon {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .autocomplete-item-icon.plugin {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .autocomplete-item-icon.skill {
+            background: var(--bg-code);
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+
+        .autocomplete-item-content { flex: 1; min-width: 0; }
+
+        .autocomplete-item-title {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .autocomplete-item-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .autocomplete-empty {
+            padding: 2rem 1rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Plugin Grid */
+        .plugins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .plugin-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .plugin-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+        }
+
+        .plugin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .plugin-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .plugin-version {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--bg-code);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .plugin-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .item-counts {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: auto;
+        }
+
+        .item-count {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .item-count-badge {
+            background: var(--bg-code);
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show { display: flex; }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 1.5rem 2rem 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .modal-title-section { flex: 1; }
+
+        .modal-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-meta {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        #modal-body {
+            padding: 1.5rem 2rem 2rem 2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s ease;
+        }
+
+        .close-button:hover { color: var(--primary); }
+
+        /* Code & Install */
+        .code-block {
+            background: var(--bg-code);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--success);
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .copy-button {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-button:hover {
+            background: var(--bg-card);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .copy-button.copied {
+            color: var(--success);
+            border-color: var(--success);
+        }
+
+        .readme-button {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .readme-button:hover {
+            background: var(--bg-card);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            margin-top: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section-title:first-of-type { margin-top: 0; }
+
+        .skill-item {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: var(--bg-code);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .skill-name {
+            font-size: 0.95rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .skill-id {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .skill-description {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            display: none;
+        }
+
+        .no-results.show { display: block; }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        @media (max-width: 968px) {
+            .navbar-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .navbar-brand {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .stat-label { display: none; }
+            .plugins-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-stats { flex-wrap: wrap; }
+            .navbar-links { flex-direction: column; width: 100%; }
+            .nav-link { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-brand">
+                <div class="navbar-title">
+                    <h1>Cloud Bulldozer Skills Marketplace</h1>
+                    <p class="subtitle">AI Coding Skills for Claude Code, Cursor, and Any LLM</p>
+                </div>
+                <div class="navbar-stats">
+                    <div class="stat">
+                        <div class="stat-value" id="plugin-count">0</div>
+                        <div class="stat-label">Plugins</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="skill-count">0</div>
+                        <div class="stat-label">Skills</div>
+                    </div>
+                </div>
+            </div>
+            <div class="navbar-links">
+                <a href="#install" class="nav-link primary">How to Install</a>
+                <a href="https://github.com/cloud-bulldozer/org-skills" class="nav-link" target="_blank">GitHub</a>
+                <a href="https://docs.anthropic.com/en/docs/claude-code/plugins" class="nav-link" target="_blank">Docs</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="search-box">
+            <input
+                type="text"
+                id="search"
+                class="search-input"
+                placeholder="Search plugins and skills..."
+                autocomplete="off"
+            >
+            <div id="autocomplete" class="autocomplete-dropdown"></div>
+        </div>
+
+        <div class="plugins-grid" id="plugins-grid"></div>
+
+        <div class="no-results" id="no-results">
+            No plugins or skills found matching your search.
+        </div>
+
+        <footer>
+            <p>Built with Claude Code | <a href="https://github.com/cloud-bulldozer/org-skills">cloud-bulldozer/org-skills</a></p>
+        </footer>
+    </div>
+
+    <div id="modal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title"></h2>
+                <button class="close-button" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        let allPlugins = [];
+
+        async function loadData() {
+            try {
+                const response = await fetch('data.json');
+                const data = await response.json();
+                allPlugins = data.plugins.sort((a, b) => a.name.localeCompare(b.name));
+
+                document.getElementById('plugin-count').textContent = data.plugins.length;
+                const totalSkills = data.plugins.reduce((sum, p) => sum + (p.skills || []).length, 0);
+                document.getElementById('skill-count').textContent = totalSkills;
+
+                renderPlugins(allPlugins);
+                handleHashChange();
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+
+        function renderPlugins(plugins) {
+            const grid = document.getElementById('plugins-grid');
+            const noResults = document.getElementById('no-results');
+
+            if (plugins.length === 0) {
+                grid.innerHTML = '';
+                noResults.classList.add('show');
+                return;
+            }
+
+            noResults.classList.remove('show');
+
+            grid.innerHTML = plugins.map(plugin => {
+                const skills = plugin.skills || [];
+                const skillCount = skills.length;
+
+                return `
+                <div class="plugin-card" onclick="showPluginModal('${plugin.name}')">
+                    <div class="plugin-header">
+                        <div>
+                            <div class="plugin-name">${plugin.name}</div>
+                            <div class="plugin-version">v${plugin.version}</div>
+                        </div>
+                    </div>
+                    <div class="plugin-description">${plugin.description}</div>
+                    <div class="item-counts">
+                        ${skillCount > 0 ? `
+                        <div class="item-count">
+                            <span class="item-count-badge">${skillCount}</span>
+                            <span>skill${skillCount !== 1 ? 's' : ''}</span>
+                        </div>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function showPluginModal(pluginName) {
+            const plugin = allPlugins.find(p => p.name === pluginName);
+            if (!plugin) return;
+
+            const skills = plugin.skills || [];
+            const skillCount = skills.length;
+
+            const headerContent = `
+                <div class="modal-title-section">
+                    <div class="modal-title">${plugin.name}</div>
+                    <div class="modal-meta">
+                        ${skillCount > 0 ? `
+                        <div class="item-count">
+                            <span class="item-count-badge">${skillCount}</span>
+                            <span>skill${skillCount !== 1 ? 's' : ''}</span>
+                        </div>` : ''}
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-end;">
+                    <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                        <span class="plugin-version">v${plugin.version}</span>
+                        <button class="close-button" onclick="closeModal()">&times;</button>
+                    </div>
+                    ${plugin.has_readme ? `
+                    <a href="https://github.com/cloud-bulldozer/org-skills/tree/main/${plugin.name}/skills"
+                       target="_blank"
+                       class="readme-button">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 3h10v10H3V3z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                            <path d="M5 6h6 M5 8h6 M5 10h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                        View Source
+                    </a>` : ''}
+                </div>`;
+
+            let content = `
+                <div class="plugin-description" style="margin-bottom: 1rem;">${plugin.description}</div>
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">Install this plugin:</div>
+                    <div style="position: relative;">
+                        <div class="code-block" style="padding-right: 5rem;">/plugin install ${plugin.name}@cb-skills</div>
+                        <button class="copy-button" onclick="copyInstallCommand('${plugin.name}', event)" title="Copy to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span class="copy-button-text">Copy</span>
+                        </button>
+                    </div>
+                </div>`;
+
+            if (skillCount > 0) {
+                content += `
+                    <div class="section-title">Skills</div>
+                    ${skills.map(skill => `
+                        <div class="skill-item">
+                            <div class="skill-name">${skill.name}</div>
+                            <div class="skill-id">/${skill.id}</div>
+                            ${skill.description ? `<div class="skill-description">${skill.description}</div>` : ''}
+                        </div>
+                    `).join('')}`;
+            }
+
+            showModal(headerContent, content);
+            window.location.hash = pluginName;
+        }
+
+        function searchAndShowAutocomplete(query) {
+            const lowerQuery = query.toLowerCase().trim();
+            const autocomplete = document.getElementById('autocomplete');
+
+            if (!lowerQuery) {
+                autocomplete.classList.remove('show');
+                renderPlugins(allPlugins);
+                return;
+            }
+
+            const results = { plugins: [], skills: [] };
+
+            allPlugins.forEach(plugin => {
+                if (plugin.name.toLowerCase().includes(lowerQuery) ||
+                    plugin.description.toLowerCase().includes(lowerQuery)) {
+                    results.plugins.push(plugin);
+                }
+
+                (plugin.skills || []).forEach(skill => {
+                    if (skill.name.toLowerCase().includes(lowerQuery) ||
+                        skill.id.toLowerCase().includes(lowerQuery) ||
+                        (skill.description && skill.description.toLowerCase().includes(lowerQuery))) {
+                        results.skills.push({ plugin: plugin.name, skill });
+                    }
+                });
+            });
+
+            updateAutocomplete(results);
+
+            const matchedPluginNames = new Set([
+                ...results.plugins.map(p => p.name),
+                ...results.skills.map(s => s.plugin)
+            ]);
+            renderPlugins(allPlugins.filter(p => matchedPluginNames.has(p.name)));
+        }
+
+        function updateAutocomplete(results) {
+            const autocomplete = document.getElementById('autocomplete');
+            const hasResults = results.plugins.length > 0 || results.skills.length > 0;
+
+            if (!hasResults) {
+                autocomplete.innerHTML = '<div class="autocomplete-empty">No matches found</div>';
+                autocomplete.classList.add('show');
+                return;
+            }
+
+            let html = '';
+
+            if (results.plugins.length > 0) {
+                html += `
+                    <div class="autocomplete-section">
+                        <div class="autocomplete-section-title">Plugins</div>
+                        ${results.plugins.map(plugin => `
+                            <div class="autocomplete-item" onclick="showPluginModal('${plugin.name}')">
+                                <div class="autocomplete-item-icon plugin">${plugin.name.charAt(0).toUpperCase()}</div>
+                                <div class="autocomplete-item-content">
+                                    <div class="autocomplete-item-title">${plugin.name}</div>
+                                    <div class="autocomplete-item-subtitle">${plugin.description}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>`;
+            }
+
+            if (results.skills.length > 0) {
+                html += `
+                    <div class="autocomplete-section">
+                        <div class="autocomplete-section-title">Skills</div>
+                        ${results.skills.map(item => `
+                            <div class="autocomplete-item" onclick="showPluginModal('${item.plugin}')">
+                                <div class="autocomplete-item-icon skill">S</div>
+                                <div class="autocomplete-item-content">
+                                    <div class="autocomplete-item-title">${item.skill.name}</div>
+                                    <div class="autocomplete-item-subtitle">/${item.skill.id}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>`;
+            }
+
+            autocomplete.innerHTML = html;
+            autocomplete.classList.add('show');
+        }
+
+        function copyToClipboard(text, event) {
+            const button = event.currentTarget;
+            const textSpan = button.querySelector('.copy-button-text');
+            const originalText = textSpan.textContent;
+
+            navigator.clipboard.writeText(text).then(() => {
+                button.classList.add('copied');
+                textSpan.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.classList.remove('copied');
+                    textSpan.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+
+        function copyInstallCommand(pluginName, event) {
+            copyToClipboard(`/plugin install ${pluginName}@cb-skills`, event);
+        }
+
+        document.getElementById('search').addEventListener('input', (e) => {
+            searchAndShowAutocomplete(e.target.value);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!document.querySelector('.search-box').contains(e.target)) {
+                document.getElementById('autocomplete').classList.remove('show');
+            }
+        });
+
+        document.getElementById('search').addEventListener('focus', (e) => {
+            if (e.target.value.trim()) searchAndShowAutocomplete(e.target.value);
+        });
+
+        function showModal(headerContent, bodyContent) {
+            const modalHeader = document.querySelector('#modal .modal-header');
+            const modalBody = document.getElementById('modal-body');
+
+            if (typeof headerContent === 'string' && headerContent.includes('<')) {
+                modalHeader.innerHTML = headerContent;
+            } else {
+                modalHeader.innerHTML = `
+                    <h2 class="modal-title">${headerContent}</h2>
+                    <button class="close-button" onclick="closeModal()">&times;</button>`;
+            }
+
+            modalBody.innerHTML = bodyContent;
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function closeModal(event) {
+            if (!event || event.target.id === 'modal') {
+                document.getElementById('modal').classList.remove('show');
+                if (window.location.hash) {
+                    history.pushState('', document.title, window.location.pathname + window.location.search);
+                }
+            }
+        }
+
+        function showInstallModal() {
+            const content = `
+                <p style="margin-bottom: 1.5rem; color: var(--text-secondary);">
+                    Install plugins from the Cloud Bulldozer Skills Marketplace using Claude Code:
+                </p>
+                <div style="position: relative; margin-bottom: 1.5rem;">
+                    <div class="code-block" style="padding-right: 5rem;">/plugin marketplace add cloud-bulldozer/org-skills</div>
+                    <button class="copy-button" onclick="copyToClipboard('/plugin marketplace add cloud-bulldozer/org-skills', event)" title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25M5.75 4.75V7.75H13.25V14.25H10.25V11.25M10.25 11.25H13.25V7.75H5.75V4.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span class="copy-button-text">Copy</span>
+                    </button>
+                </div>
+                <p style="margin: 1.5rem 0 1rem; color: var(--text-secondary);">
+                    Then install a specific plugin:
+                </p>
+                <div class="code-block">/plugin install orion@cb-skills</div>
+                <p style="margin: 1.5rem 0 1rem; color: var(--text-secondary);">
+                    Use the skill:
+                </p>
+                <div class="code-block">/orion-regression-analysis</div>
+                <p style="margin: 1.5rem 0 1rem; color: var(--text-secondary);">
+                    <strong>Cursor:</strong>
+                </p>
+                <div class="code-block" style="color: var(--text-secondary);">curl -fsSL https://raw.githubusercontent.com/cloud-bulldozer/org-skills/main/install-cursor.sh | bash</div>
+                <p style="margin: 1.5rem 0 1rem; color: var(--text-secondary);">
+                    <strong>Any LLM:</strong> Skills are just markdown &mdash; read the SKILL.md file and pass it as a system prompt.
+                </p>
+                <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.875rem;">
+                    For more information, visit the <a href="https://docs.anthropic.com/en/docs/claude-code/plugins" style="color: var(--primary);">Claude Code plugin documentation</a>.
+                </p>`;
+            showModal('How to Install', content);
+            window.location.hash = 'install';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        function handleHashChange() {
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                if (hash === 'install') {
+                    showInstallModal();
+                } else {
+                    const plugin = allPlugins.find(p => p.name === hash);
+                    if (plugin) showPluginModal(hash);
+                }
+            }
+        }
+
+        window.addEventListener('hashchange', handleHashChange);
+        loadData();
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+.git
+_site
+.jekyll-cache
+.DS_Store
+*.log
+__pycache__

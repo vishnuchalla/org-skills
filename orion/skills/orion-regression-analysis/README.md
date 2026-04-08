@@ -12,33 +12,6 @@ This skill transforms Claude into an expert Orion assistant that can help you wi
 - **Configuration Creation & Tuning**: Design YAML configs, set thresholds, configure correlations
 - **Troubleshooting**: Diagnose configuration issues, query problems, and detection failures
 
-## Installation
-We will assume you have Orion installed in a python venv and that is sourced before you begin.
-
-### Quick Install
-
-```bash
-# Clone this repository
-git clone https://github.com/jtaleric/orion-skill.git
-cd orion-skill
-
-# Run the installer
-./install.sh
-```
-
-### Manual Install
-
-```bash
-# Create skill directory
-mkdir -p ~/.claude/skills/orion-regression-analysis
-
-# Copy skill files
-cp -r . ~/.claude/skills/orion-regression-analysis/
-
-# Verify installation
-ls ~/.claude/skills/orion-regression-analysis/SKILL.md
-```
-
 ## Usage
 
 Once installed, you can invoke the skill in Claude Code:

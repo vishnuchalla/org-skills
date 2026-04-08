@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "cb-skills": {
+      "source": {
+        "source": "directory",
+        "path": "/opt/org-skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "orion@cb-skills": true
+  }
+}
