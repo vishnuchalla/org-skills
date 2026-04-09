@@ -1,0 +1,32 @@
+{
+  "pass_rate": 0.4,
+  "passed": 2,
+  "total": 5,
+  "expectations": [
+    {
+      "text": "no-aggregation-field",
+      "passed": true,
+      "evidence": "Found 'agg:/aggregation:' block: False, Found 'agg_type': False"
+    },
+    {
+      "text": "filters-at-metrics-level",
+      "passed": false,
+      "evidence": "profile.keyword in metrics: False, hostNetwork in metrics: True, filters in metadata: False"
+    },
+    {
+      "text": "quoted-booleans",
+      "passed": false,
+      "evidence": "Quoted 'false' count: 0, Unquoted false count: 6"
+    },
+    {
+      "text": "correct-metadata-prefix",
+      "passed": false,
+      "evidence": "metadata.platform: False, metadata.ocpMajorVersion: False"
+    },
+    {
+      "text": "covers-both-profiles",
+      "passed": true,
+      "evidence": "TCP_STREAM: True, TCP_RR: True"
+    }
+  ]
+}

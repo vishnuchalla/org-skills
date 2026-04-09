@@ -1,0 +1,27 @@
+{
+  "eval_id": 1,
+  "eval_name": "k8s-netperf-config-creation",
+  "prompt": "Can you help me set up an Orion config for k8s-netperf analysis? I want to track TCP_STREAM and TCP_RR throughput and latency for pod network (not host network, no service) on AWS with OCP 4.17. I already have my ES connection configured.",
+  "assertions": [
+    {
+      "name": "no-aggregation-field",
+      "description": "Config does NOT contain an 'aggregation' or 'agg' field (k8s-netperf data is pre-aggregated)"
+    },
+    {
+      "name": "filters-at-metrics-level",
+      "description": "profile.keyword, hostNetwork, and service fields are at the metrics level, not inside metadata"
+    },
+    {
+      "name": "quoted-booleans",
+      "description": "Boolean values for hostNetwork and service use quoted strings like '\"false\"', not bare YAML booleans"
+    },
+    {
+      "name": "correct-metadata-prefix",
+      "description": "Metadata fields use metadata.platform and metadata.ocpMajorVersion prefix format"
+    },
+    {
+      "name": "covers-both-profiles",
+      "description": "Config includes separate metric entries for both TCP_STREAM and TCP_RR profiles"
+    }
+  ]
+}

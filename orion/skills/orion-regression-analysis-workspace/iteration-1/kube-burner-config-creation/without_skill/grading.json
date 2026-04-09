@@ -1,0 +1,37 @@
+{
+  "pass_rate": 0.6666666666666666,
+  "passed": 4,
+  "total": 6,
+  "expectations": [
+    {
+      "text": "uses-agg-not-aggregation",
+      "passed": true,
+      "evidence": "Found 'agg:': True, Found 'aggregation:': False"
+    },
+    {
+      "text": "agg-has-nested-structure",
+      "passed": false,
+      "evidence": "Found nested 'value': True, Found 'agg_type': False"
+    },
+    {
+      "text": "includes-metricName",
+      "passed": true,
+      "evidence": "Found 3 metricName fields (expected >= 3)"
+    },
+    {
+      "text": "includes-node-config",
+      "passed": true,
+      "evidence": "Found 4/4 node config fields: ['masterNodesType', 'masterNodesCount', 'workerNodesType', 'workerNodesCount']"
+    },
+    {
+      "text": "correct-namespaces",
+      "passed": false,
+      "evidence": "openshift-kube-apiserver: False, openshift-ovn-kubernetes: False"
+    },
+    {
+      "text": "has-benchmark-keyword",
+      "passed": true,
+      "evidence": "Found benchmark.keyword: cluster-density-v2: True"
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "metadata": {
+    "skill_name": "orion-regression-analysis",
+    "skill_path": "/Users/vchalla/myforks/org-skills/orion/skills/orion-regression-analysis",
+    "executor_model": "claude-opus-4-6",
+    "analyzer_model": "claude-opus-4-6",
+    "timestamp": "2026-04-09T00:00:00Z",
+    "evals_run": [0, 1, 2],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "eval_name": "kube-burner-config-creation",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 72.1,
+        "tokens": 31707,
+        "tool_calls": 8,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "uses-agg-not-aggregation", "passed": true, "evidence": "Config uses 'agg:' field, not 'aggregation:'"},
+        {"text": "agg-has-nested-structure", "passed": true, "evidence": "agg: contains nested 'value' and 'agg_type' fields"},
+        {"text": "includes-metricName", "passed": true, "evidence": "Found 3 metricName fields"},
+        {"text": "includes-node-config", "passed": true, "evidence": "Found 4/4 node config fields"},
+        {"text": "correct-namespaces", "passed": true, "evidence": "Uses openshift-kube-apiserver and openshift-ovn-kubernetes"},
+        {"text": "has-benchmark-keyword", "passed": true, "evidence": "benchmark.keyword: cluster-density-v2 present"}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "eval_name": "kube-burner-config-creation",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.67,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": 25.2,
+        "tokens": 9454,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "uses-agg-not-aggregation", "passed": true, "evidence": "Uses 'agg:' field"},
+        {"text": "agg-has-nested-structure", "passed": false, "evidence": "Uses 'agg_period: 5m' instead of 'agg_type: avg' — wrong nested structure"},
+        {"text": "includes-metricName", "passed": true, "evidence": "Has metricName fields but with wrong values (apiServerCPU instead of containerCPU)"},
+        {"text": "includes-node-config", "passed": true, "evidence": "Found 4/4 node config fields"},
+        {"text": "correct-namespaces", "passed": false, "evidence": "No namespace filters at all — missing openshift-kube-apiserver and openshift-ovn-kubernetes"},
+        {"text": "has-benchmark-keyword", "passed": true, "evidence": "benchmark.keyword: cluster-density-v2 present"}
+      ],
+      "notes": ["Used agg_period instead of agg_type", "Wrong metricName values (apiServerCPU vs containerCPU)", "No namespace filtering", "Invented non-existent fields: index, benchmarkIndex, ES_config_path", "Used clusterType: rosa instead of self-managed"]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "k8s-netperf-config-creation",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 55.6,
+        "tokens": 29173,
+        "tool_calls": 6,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "no-aggregation-field", "passed": true, "evidence": "No agg/aggregation field in config"},
+        {"text": "filters-at-metrics-level", "passed": true, "evidence": "profile.keyword, hostNetwork, service at metrics level"},
+        {"text": "quoted-booleans", "passed": true, "evidence": "Uses quoted \"false\" strings"},
+        {"text": "correct-metadata-prefix", "passed": true, "evidence": "Uses metadata.platform and metadata.ocpMajorVersion"},
+        {"text": "covers-both-profiles", "passed": true, "evidence": "TCP_STREAM and TCP_RR both present with 4 metrics total"}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "k8s-netperf-config-creation",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.4,
+        "passed": 2,
+        "failed": 3,
+        "total": 5,
+        "time_seconds": 31.2,
+        "tokens": 9627,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "no-aggregation-field", "passed": true, "evidence": "No agg/aggregation field (but uses completely wrong config structure instead)"},
+        {"text": "filters-at-metrics-level", "passed": false, "evidence": "No profile.keyword field at all; uses 'test: TCP_STREAM' instead; hostNetwork/service in metadata not metrics"},
+        {"text": "quoted-booleans", "passed": false, "evidence": "Uses bare YAML booleans (false) not quoted strings (\"false\")"},
+        {"text": "correct-metadata-prefix", "passed": false, "evidence": "Uses 'platform:' and 'ocpVersion:' without metadata. prefix"},
+        {"text": "covers-both-profiles", "passed": true, "evidence": "TCP_STREAM and TCP_RR present (but as separate test entries, not metrics)"}
+      ],
+      "notes": ["Completely wrong config structure — each profile is a separate test instead of metrics under one test", "Uses non-existent fields: metric, metricField, env, kpi, benchmarkIndex", "Filters in metadata instead of metrics level", "Unquoted boolean values", "No metric_of_interest field", "No metadata.platform prefix format"]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "troubleshooting-no-data",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 64.2,
+        "tokens": 40164,
+        "tool_calls": 9,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "identifies-wrong-benchmark-name", "passed": true, "evidence": "Clearly identifies cluster-density should be cluster-density-v2"},
+        {"text": "suggests-discovery-script", "passed": true, "evidence": "Recommends discover-es-data.py with correct path and --config flag syntax"},
+        {"text": "suggests-debug-flag", "passed": true, "evidence": "Mentions --debug flag"},
+        {"text": "mentions-metadata-filters", "passed": true, "evidence": "Discusses metadata filters being too restrictive, suggests stripping to minimal config"}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "troubleshooting-no-data",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.75,
+        "passed": 3,
+        "failed": 1,
+        "total": 4,
+        "time_seconds": 44.8,
+        "tokens": 10480,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "identifies-wrong-benchmark-name", "passed": true, "evidence": "Correctly identifies cluster-density vs cluster-density-v2"},
+        {"text": "suggests-discovery-script", "passed": false, "evidence": "Does NOT mention discover-es-data.py — suggests raw curl queries instead"},
+        {"text": "suggests-debug-flag", "passed": true, "evidence": "Mentions --debug flag"},
+        {"text": "mentions-metadata-filters", "passed": true, "evidence": "Discusses verifying filter fields"}
+      ],
+      "notes": ["No knowledge of Orion discovery script", "Suggests generic curl queries instead of purpose-built tooling", "Uses 'orion cmd' instead of correct 'orion --config' syntax"]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0},
+      "time_seconds": {"mean": 63.97, "stddev": 8.26, "min": 55.6, "max": 72.1},
+      "tokens": {"mean": 33681, "stddev": 5783, "min": 29173, "max": 40164}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.61, "stddev": 0.18, "min": 0.4, "max": 0.75},
+      "time_seconds": {"mean": 33.73, "stddev": 9.93, "min": 25.2, "max": 44.8},
+      "tokens": {"mean": 9854, "stddev": 547, "min": 9454, "max": 10480}
+    },
+    "delta": {
+      "pass_rate": "+0.39",
+      "time_seconds": "+30.2",
+      "tokens": "+23827"
+    }
+  },
+  "notes": [
+    "Baselines ran in /tmp with no access to repo — truly isolated comparison.",
+    "Skill provides +39% pass rate improvement (100% vs 61% average).",
+    "k8s-netperf shows largest gap: 100% vs 40% — baseline produced completely wrong config structure.",
+    "Baseline used wrong agg structure (agg_period instead of agg_type), wrong metricName values, no namespace filters, unquoted booleans, and invented non-existent config fields.",
+    "Skill uses ~3.4x more tokens and ~1.9x more time, but this is expected since it reads reference documentation to produce correct configs.",
+    "Troubleshooting eval: both identified the cluster-density vs cluster-density-v2 issue (likely in Claude's training data), but only with_skill knows about the discover-es-data.py script."
+  ]
+}

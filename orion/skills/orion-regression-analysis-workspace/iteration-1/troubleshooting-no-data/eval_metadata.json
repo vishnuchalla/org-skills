@@ -1,0 +1,23 @@
+{
+  "eval_id": 2,
+  "eval_name": "troubleshooting-no-data",
+  "prompt": "I'm getting no data returned when I run orion --config my-config.yaml --hunter-analyze against my ES cluster. The config has benchmark.keyword set to 'cluster-density' and I'm using the ripsaw-kube-burner-* index. My ES config validates fine. What could be wrong and how do I debug this?",
+  "assertions": [
+    {
+      "name": "identifies-wrong-benchmark-name",
+      "description": "Identifies that 'cluster-density' is likely incorrect and should be 'cluster-density-v2'"
+    },
+    {
+      "name": "suggests-discovery-script",
+      "description": "Recommends using the discovery script (discover-es-data.py) to find correct benchmark names"
+    },
+    {
+      "name": "suggests-debug-flag",
+      "description": "Mentions using the --debug flag for detailed query/processing information"
+    },
+    {
+      "name": "mentions-metadata-filters",
+      "description": "Discusses verifying metadata filter values match what exists in ES"
+    }
+  ]
+}

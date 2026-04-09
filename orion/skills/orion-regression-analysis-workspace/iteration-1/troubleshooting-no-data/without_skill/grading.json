@@ -1,0 +1,27 @@
+{
+  "pass_rate": 0.75,
+  "passed": 3,
+  "total": 4,
+  "expectations": [
+    {
+      "text": "identifies-wrong-benchmark-name",
+      "passed": true,
+      "evidence": "Mentions cluster-density-v2 as correct name: True"
+    },
+    {
+      "text": "suggests-discovery-script",
+      "passed": false,
+      "evidence": "Mentions discovery script: False"
+    },
+    {
+      "text": "suggests-debug-flag",
+      "passed": true,
+      "evidence": "Mentions --debug flag: True"
+    },
+    {
+      "text": "mentions-metadata-filters",
+      "passed": true,
+      "evidence": "Discusses metadata filters: True"
+    }
+  ]
+}

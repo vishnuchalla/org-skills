@@ -1,0 +1,44 @@
+{
+  "skill_name": "orion-regression-analysis",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I need to create an Orion config to monitor control plane performance for cluster-density-v2 on AWS with OCP 4.18. I want to track API server CPU, etcd disk commit latency, and OVN kubernetes memory. We have 3 m6a.xlarge masters and 6 m6a.xlarge workers. My ES config is already set up at ~/.orion/elasticsearch-config.yaml.",
+      "expected_output": "A valid Orion YAML config with correct kube-burner structure: metricName fields, agg: with nested value/agg_type, node config metadata, correct namespaces for each component",
+      "files": [],
+      "assertions": [
+        {"name": "uses-agg-not-aggregation", "description": "Config uses 'agg:' field with nested value/agg_type, not 'aggregation:'"},
+        {"name": "agg-has-nested-structure", "description": "agg: contains nested 'value' and 'agg_type' fields"},
+        {"name": "includes-metricName", "description": "Each metric entry has a 'metricName' field"},
+        {"name": "includes-node-config", "description": "Config includes masterNodesType, masterNodesCount, workerNodesType, workerNodesCount in metadata"},
+        {"name": "correct-namespaces", "description": "Uses correct namespace filters (e.g., openshift-kube-apiserver for API server, openshift-ovn-kubernetes for OVN)"},
+        {"name": "has-benchmark-keyword", "description": "Metadata includes benchmark.keyword: cluster-density-v2"}
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Can you help me set up an Orion config for k8s-netperf analysis? I want to track TCP_STREAM and TCP_RR throughput and latency for pod network (not host network, no service) on AWS with OCP 4.17. I already have my ES connection configured.",
+      "expected_output": "A valid k8s-netperf Orion YAML config with: no aggregation field, profile/hostNetwork/service at metrics level (not metadata), quoted boolean strings, correct metadata structure with metadata.platform and metadata.ocpMajorVersion",
+      "files": [],
+      "assertions": [
+        {"name": "no-aggregation-field", "description": "Config does NOT contain an 'aggregation' or 'agg' field (k8s-netperf data is pre-aggregated)"},
+        {"name": "filters-at-metrics-level", "description": "profile.keyword, hostNetwork, and service fields are at the metrics level, not inside metadata"},
+        {"name": "quoted-booleans", "description": "Boolean values for hostNetwork and service use quoted strings like '\"false\"', not bare YAML booleans"},
+        {"name": "correct-metadata-prefix", "description": "Metadata fields use metadata.platform and metadata.ocpMajorVersion prefix format"},
+        {"name": "covers-both-profiles", "description": "Config includes separate metric entries for both TCP_STREAM and TCP_RR profiles"}
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm getting no data returned when I run orion --config my-config.yaml --hunter-analyze against my ES cluster. The config has benchmark.keyword set to 'cluster-density' and I'm using the ripsaw-kube-burner-* index. My ES config validates fine. What could be wrong and how do I debug this?",
+      "expected_output": "Should identify that 'cluster-density' is likely wrong (should be 'cluster-density-v2'), suggest using the discovery script to find correct benchmark names, recommend debugging steps including --debug flag and checking metadata filters",
+      "files": [],
+      "assertions": [
+        {"name": "identifies-wrong-benchmark-name", "description": "Identifies that 'cluster-density' is likely incorrect and should be 'cluster-density-v2'"},
+        {"name": "suggests-discovery-script", "description": "Recommends using the discovery script (discover-es-data.py) to find correct benchmark names"},
+        {"name": "suggests-debug-flag", "description": "Mentions using the --debug flag for detailed query/processing information"},
+        {"name": "mentions-metadata-filters", "description": "Discusses verifying metadata filter values match what exists in ES"}
+      ]
+    }
+  ]
+}

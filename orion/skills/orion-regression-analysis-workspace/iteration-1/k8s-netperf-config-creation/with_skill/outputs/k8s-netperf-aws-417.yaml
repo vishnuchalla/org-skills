@@ -1,0 +1,71 @@
+# k8s-netperf Analysis Configuration - AWS OCP 4.17
+#
+# Tracks TCP_STREAM and TCP_RR throughput and latency for pod network
+# (hostNetwork: false, service: false) on AWS with OCP 4.17.
+#
+# Usage:
+#   orion --config k8s-netperf-aws-417.yaml --hunter-analyze \
+#     --es-server='<your-es-server-url>' \
+#     --benchmark-index='k8s-netperf' \
+#     --metadata-index='k8s-netperf' \
+#     --lookback=15d --viz
+
+tests:
+  - name: k8s-netperf-tcp-aws-417
+    metadata:
+      # Metadata level: only platform and version (for UUID matching)
+      metadata.platform: AWS
+      metadata.ocpMajorVersion: "4.17"
+    metrics:
+      # --- TCP_STREAM (Bulk Data Transfer) ---
+
+      # TCP_STREAM Throughput - Pod Network
+      # Measures bandwidth in Mb/s through the CNI plugin
+      - name: tcpStreamThroughput
+        metric_of_interest: throughput
+        profile.keyword: TCP_STREAM
+        hostNetwork: "false"
+        service: "false"
+        threshold: 10
+        direction: -1  # Throughput decrease is a regression
+
+      # TCP_STREAM Latency - Pod Network
+      # Measures latency in microseconds for bulk transfers
+      - name: tcpStreamLatency
+        metric_of_interest: latency
+        profile.keyword: TCP_STREAM
+        hostNetwork: "false"
+        service: "false"
+        threshold: 20
+        direction: 1  # Latency increase is a regression
+
+      # --- TCP_RR (Request-Response / Transaction Rate) ---
+
+      # TCP_RR Throughput - Pod Network
+      # Measures transaction rate in OP/s (operations per second)
+      - name: tcpRRThroughput
+        metric_of_interest: throughput
+        profile.keyword: TCP_RR
+        hostNetwork: "false"
+        service: "false"
+        threshold: 15
+        direction: -1  # Transaction rate decrease is a regression
+
+      # TCP_RR Latency - Pod Network
+      # Measures round-trip time in microseconds
+      - name: tcpRRLatency
+        metric_of_interest: latency
+        profile.keyword: TCP_RR
+        hostNetwork: "false"
+        service: "false"
+        threshold: 20
+        direction: 1  # Latency increase is a regression
+
+# Notes:
+# 1. NO aggregation field - k8s-netperf data is pre-aggregated per run
+# 2. Boolean filters are quoted strings: "false" (not YAML booleans)
+# 3. profile.keyword, hostNetwork, service are at METRICS level (not metadata)
+# 4. Metadata level contains only platform/version for UUID matching
+# 5. TCP_STREAM throughput is in Mb/s; TCP_RR throughput is in OP/s
+# 6. Both benchmark-index and metadata-index should be 'k8s-netperf'
+# 7. Thresholds: 10% for stream throughput, 15% for RR throughput, 20% for latencies

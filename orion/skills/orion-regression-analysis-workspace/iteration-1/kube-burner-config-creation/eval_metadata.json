@@ -1,0 +1,31 @@
+{
+  "eval_id": 0,
+  "eval_name": "kube-burner-config-creation",
+  "prompt": "I need to create an Orion config to monitor control plane performance for cluster-density-v2 on AWS with OCP 4.18. I want to track API server CPU, etcd disk commit latency, and OVN kubernetes memory. We have 3 m6a.xlarge masters and 6 m6a.xlarge workers. My ES config is already set up at ~/.orion/elasticsearch-config.yaml.",
+  "assertions": [
+    {
+      "name": "uses-agg-not-aggregation",
+      "description": "Config uses 'agg:' field with nested value/agg_type, not 'aggregation:'"
+    },
+    {
+      "name": "agg-has-nested-structure",
+      "description": "agg: contains nested 'value' and 'agg_type' fields"
+    },
+    {
+      "name": "includes-metricName",
+      "description": "Each metric entry has a 'metricName' field"
+    },
+    {
+      "name": "includes-node-config",
+      "description": "Config includes masterNodesType, masterNodesCount, workerNodesType, workerNodesCount in metadata"
+    },
+    {
+      "name": "correct-namespaces",
+      "description": "Uses correct namespace filters (e.g., openshift-kube-apiserver for API server, openshift-ovn-kubernetes for OVN)"
+    },
+    {
+      "name": "has-benchmark-keyword",
+      "description": "Metadata includes benchmark.keyword: cluster-density-v2"
+    }
+  ]
+}

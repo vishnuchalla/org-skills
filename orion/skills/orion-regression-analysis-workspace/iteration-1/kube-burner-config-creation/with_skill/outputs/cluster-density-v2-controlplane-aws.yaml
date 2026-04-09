@@ -1,0 +1,100 @@
+# Control Plane Performance Analysis for cluster-density-v2 on AWS
+#
+# Monitors: API Server CPU, etcd Disk Commit Latency, OVN Kubernetes Memory
+# Platform: AWS | OCP 4.18 | 3 m6a.xlarge masters, 6 m6a.xlarge workers
+#
+# Usage:
+#   orion --config cluster-density-v2-controlplane-aws.yaml --hunter-analyze \
+#     --es-server='<your-es-server-url>' \
+#     --benchmark-index='ripsaw-kube-burner-*' \
+#     --metadata-index='perf_scale_ci*' \
+#     --lookback=15d --viz
+#
+#   Or with version templating:
+#   orion --config cluster-density-v2-controlplane-aws.yaml --hunter-analyze \
+#     --input-vars='{"version": "4.18"}' \
+#     --es-server='<your-es-server-url>' \
+#     --benchmark-index='ripsaw-kube-burner-*' \
+#     --metadata-index='perf_scale_ci*' \
+#     --lookback=15d --viz
+
+tests:
+  - name: control-plane-performance-aws-4.18
+    metadata:
+      # Platform and infrastructure
+      platform: AWS
+      clusterType: self-managed
+      networkType: OVNKubernetes
+
+      # Node configuration
+      masterNodesType: m6a.xlarge
+      masterNodesCount: 3
+      workerNodesType: m6a.xlarge
+      workerNodesCount: 6
+
+      # Test identification
+      benchmark.keyword: cluster-density-v2
+      ocpVersion: "4.18"
+
+      # Exclude non-standard runs
+      not:
+        stream: okd
+        jobConfig.name: garbage-collection
+
+    metrics:
+      # -------------------------------------------------------
+      # 1. API Server CPU Usage
+      # -------------------------------------------------------
+      # Tracks average CPU consumption of the kube-apiserver.
+      # Increases indicate the API server is under heavier load,
+      # which can degrade cluster responsiveness.
+      - name: apiserverCPU
+        metricName: containerCPU
+        labels.namespace.keyword: openshift-kube-apiserver
+        metric_of_interest: value
+        agg:
+          value: cpu
+          agg_type: avg
+        threshold: 10
+        direction: 1
+        labels:
+          - "[Jira: kube-apiserver]"
+
+      # -------------------------------------------------------
+      # 2. etcd Disk Backend Commit Latency (99th percentile)
+      # -------------------------------------------------------
+      # Tracks the 99th percentile of etcd disk backend commit
+      # duration. High values indicate storage I/O pressure on
+      # etcd, which can cause cluster instability and slow
+      # API responses. Correlated with etcd CPU for root cause.
+      - name: etcdDiskBackendCommitLatency
+        metricName: 99thEtcdDiskBackendCommitDurationSeconds
+        metric_of_interest: value
+        agg:
+          value: duration
+          agg_type: avg
+        threshold: 15
+        direction: 1
+        correlation: apiserverCPU_avg
+        labels:
+          - "[Jira: etcd]"
+
+      # -------------------------------------------------------
+      # 3. OVN Kubernetes Memory Usage
+      # -------------------------------------------------------
+      # Tracks peak memory consumption of OVN Kubernetes
+      # networking components. Memory growth can indicate leaks
+      # or scaling issues in the network layer, eventually
+      # leading to OOM kills and network disruptions.
+      - name: ovnKubernetesMemory
+        metricName: containerMemory
+        labels.namespace.keyword: openshift-ovn-kubernetes
+        metric_of_interest: value
+        agg:
+          value: memory
+          agg_type: max
+        threshold: 15
+        direction: 1
+        correlation: apiserverCPU_avg
+        labels:
+          - "[Jira: OVN]"

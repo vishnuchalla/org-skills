@@ -1,0 +1,69 @@
+tests:
+  - name: k8s-netperf-tcp-stream-throughput
+    index: k8s-netperf
+    benchmarkIndex: k8s-netperf
+    metric: throughput
+    metricField: throughput
+    direction: 1
+    labels:
+      - TCP_STREAM Throughput (Gbps)
+    metadata:
+      ocpVersion: "4.17"
+      platform: AWS
+      benchmark: k8s-netperf
+      hostNetwork: false
+      service: false
+      test: TCP_STREAM
+    env:
+      - ES_SERVER
+      - ES_INDEX
+    kpi:
+      - direction: 1
+        max_regression: 5
+        max_progression: 50
+
+  - name: k8s-netperf-tcp-rr-throughput
+    index: k8s-netperf
+    benchmarkIndex: k8s-netperf
+    metric: throughput
+    metricField: throughput
+    direction: 1
+    labels:
+      - TCP_RR Throughput (transactions/s)
+    metadata:
+      ocpVersion: "4.17"
+      platform: AWS
+      benchmark: k8s-netperf
+      hostNetwork: false
+      service: false
+      test: TCP_RR
+    env:
+      - ES_SERVER
+      - ES_INDEX
+    kpi:
+      - direction: 1
+        max_regression: 5
+        max_progression: 50
+
+  - name: k8s-netperf-tcp-rr-latency-p99
+    index: k8s-netperf
+    benchmarkIndex: k8s-netperf
+    metric: latency
+    metricField: latency
+    direction: -1
+    labels:
+      - TCP_RR P99 Latency (usec)
+    metadata:
+      ocpVersion: "4.17"
+      platform: AWS
+      benchmark: k8s-netperf
+      hostNetwork: false
+      service: false
+      test: TCP_RR
+    env:
+      - ES_SERVER
+      - ES_INDEX
+    kpi:
+      - direction: 1
+        max_regression: 5
+        max_progression: 50
